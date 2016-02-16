@@ -162,8 +162,11 @@ class WooThemes_Updater_Admin {
 		foreach ( $products as $file => $product ) {
 
 			if ( isset( $product['license_expiry'] ) && ! in_array( $product['license_expiry'], array( '-', 'Please activate' ) ) ) {
-				$date = new DateTime( $product['license_expiry'] );
-
+				try {
+					$date = new DateTime( $product['license_expiry'] );
+				}catch(Exception $e){
+					continue;
+				}
 				if ( current_time( 'timestamp' ) > strtotime( '-60 days', $date->format( 'U' ) ) && current_time( 'timestamp' ) < strtotime( '+4 days', $date->format( 'U' ) ) ) {
 					$notices[] = sprintf( __( 'Your license for <strong>%s</strong> expires on %s, %srenew now for a 50%% discount%s.'), $product['product_name'], $date->format( get_option( 'date_format' ) ), '<a href="' . $renew_link . '">', '</a>' );
 				} elseif ( current_time( 'timestamp' ) > $date->format( 'U' ) ) {
